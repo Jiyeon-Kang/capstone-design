@@ -19,7 +19,7 @@ import java.net.NetworkInterface
 import java.net.SocketException
 import java.util.*
 import kotlin.collections.ArrayList
-
+//추천된 화면
 
 class RecommendActivity : AppCompatActivity()  {
 

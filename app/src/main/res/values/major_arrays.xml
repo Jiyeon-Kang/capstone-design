@@ -31,7 +31,7 @@
         <item>화학과</item>
         <item>패션산업학과</item>
         <item>해양학과</item>
-    </string-array>
+    </string-array>`
     <string-array name="arr_sahoe">
         <item>사회복지학과</item>
         <item>신문방송학과</item>
