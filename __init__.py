@@ -114,7 +114,7 @@ def listener(event):
     # print(class2id)
     # print(id2class)
     # print(class_Num)
-    sim_scores = [(i, c) for i, c in enumerate(cosine_matrix[idx]) if i != idx]  # 자기 자신을 제외한 영화들의 유사도 및 인덱스를 추출
+    sim_scores = [(i, c) for i, c in enumerate(cosine_matrix[idx]) if i != idx]  # 자기 자신을 제외한 과목들의 유사도 및 인덱스를 추출
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)  # 유사도가 높은 순서대로 정렬
 
     sim_scores = [(class_Num[i], score) for i, score in sim_scores[0:10]]
