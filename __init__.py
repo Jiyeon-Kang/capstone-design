@@ -13,7 +13,7 @@ from firebase_admin import db
 
 
 
-# Flask 인스턴스 생성
+# Flask 인스턴스 생성 #Flask instance 生成
 app = Flask(__name__)
 api = Api(app)
 
@@ -26,7 +26,7 @@ obj = firebase_admin.initialize_app(cred,{
 })
 
 
-# 제한과목 필터 func
+# 제한과목 필터 func　#制限科目フィルター　func
 def get_restricted(sentence):
     # major = "무역학부"
     # 1. firebase에서 "학과(부)" 가져오기!
@@ -50,7 +50,7 @@ def get_restricted(sentence):
         if major == data[i][0]:
             for j in range(0, len(arr[i])):
                 if arr[i][j] != 0:
-                    # print(arr[i][j])  # 제한과목 목록. 출력
+                    # print(arr[i][j])  # 제한과목 목록. 출력　#制限科目リスト、出力
                     temp+=arr[i][j]+","
 
     f2.close()
@@ -58,11 +58,11 @@ def get_restricted(sentence):
     return temp
 
 
-#리스너 함수
+#리스너 함수　#リスナー関数
 def listener(event):
 
     """
-     #데이터출력
+     #데이터출력　#データ出力
     print(event.event_type)  # can be 'put' or 'patch'
     print(event.path)  # relative to the reference, it seems
     print(event.data)
@@ -98,7 +98,7 @@ def listener(event):
 
     df.loc[(df['class'] == '검색'), 'keyword'] = stt_text
 
-    tfidf_vectorizer = TfidfVectorizer()  # TF-IDF 객체선언
+    tfidf_vectorizer = TfidfVectorizer()  # TF-IDF 객체선언　#TF-IDFオブジェクト宣言
     tfidf_matrix = tfidf_vectorizer.fit_transform(df['keyword'])
 
     cosine_matrix = cosine_similarity(tfidf_matrix, tfidf_matrix)
@@ -115,7 +115,9 @@ def listener(event):
     # print(id2class)
     # print(class_Num)
     sim_scores = [(i, c) for i, c in enumerate(cosine_matrix[idx]) if i != idx]  # 자기 자신을 제외한 과목들의 유사도 및 인덱스를 추출
+                                                                                 # 科目たちの類似度、Index抽出
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)  # 유사도가 높은 순서대로 정렬
+                                                                       # 類似度が高い順で整列
 
     sim_scores = [(class_Num[i], score) for i, score in sim_scores[0:10]]
     # print(sim_scores)
@@ -124,7 +126,7 @@ def listener(event):
         if float(sim_scores[i][1]) > 0:
             res.append(sim_scores[i][0])
 
-    m = dict(zip(range(1, len(res) + 1), res))  # 상위10개과목 제이슨으로 변환
+    m = dict(zip(range(1, len(res) + 1), res))  # 상위10개과목 제이슨으로 변환　# 上位10科目jsonに変換
     m = json.dumps(m, ensure_ascii=False)
     jsonObject = json.loads(m)
 
@@ -135,6 +137,10 @@ def listener(event):
 # get_restricted(sentence)를 통해 문자열 temp를 받아 문자열을 ',' 로 split을 해서 각 과목명을 임시 list에 저장한다
 # ex. 3개의 과목명이 있는 list_tmp[] 의 각 element와 추천과목의 과목명을 비교하여 filtering한다.
 # filtering할 때 10개를 가져오면            1)10개 이하의 과목이 불러와져도 괜찮음. class로 넣는 것이기때문에 안드를 조금 수정해야함         2)10개를 가져옴. 대신 pycharm에서 counting이 필요함.
+
+# sentenceをFirebaseから受け取ってくる
+# get_restricted(sentence)を通じて文字列tempを受け取り、文字列を','とsplitして各科目名を臨時listに保存する
+# ex. 3 つの科目名があるlist_tmp[] の各elementと推薦科目の科目名を比較してfilteringする。
 
     ref = db.reference('majorName')
     row = ref.get()
@@ -148,10 +154,10 @@ def listener(event):
     for i in range(1, 11):
         if cnt == 10 : break
         tmp = str(i)
-        str2 = str(jsonObject.get(tmp)) # 학수번호
+        str2 = str(jsonObject.get(tmp)) # 학수번호　# 授業番号
         chk=True
         for i in range(0, line):
-            if str2 == jsob[i].get("학수번호"):  # 비교해서 같을 경우
+            if str2 == jsob[i].get("학수번호"):  # 비교해서 같을 경우　# 比較して同じ場合
 
                 for j in range(0,len(list_tmp)-1):
                     if jsob[i].get("교과목명") == list_tmp[j]:
@@ -169,6 +175,7 @@ def listener(event):
 
     # print(len(list))
     # 추출한 정보들을 json으로 변환.
+    # 抽出した情報をjsonに変換。
     l = dict(zip(range(0, len(list) + 1), list))
     l = json.dumps(l, ensure_ascii=False, indent="\t")
     print(l)
@@ -185,9 +192,9 @@ def listener(event):
         check.set("exist")
     f1.close()
 
-#리스너 실행
+#리스너 실행　# リスナー実行
 dir=db.reference('sttText', app= obj).listen(listener)
 
-# 서버 실행
+# 서버 실행 # サーバー実行
 if __name__ == '__main__':
     app.run(debug=True)
